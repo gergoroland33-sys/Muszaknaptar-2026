@@ -55,20 +55,23 @@ let muszakok = [];
 fetch('muszakok.csv')
 .then(r => r.text())
 .then(text => {
-muszakok = text.split('\n').slice(1).map(s=>{
-const cols = s.split(';');
-let napiAdatok = [];
-for(let i=1;i<cols.length;i+=4){
-if(cols[i] && cols[i+2]){
-napiAdatok.push({
-datum: cols[0].replace(/\./g,'-').trim(), // 2026.01.01 -> 2026-01-01
-nev: cols[i].trim(),
-muszak: cols[i+2].trim().toUpperCase()
+muszakok = [];
+const sorok = text.split('\n').slice(1);
+sorok.forEach(sor=>{
+const cols = sor.split(';').map(c=>c.trim());
+// Négyes csoportok: [hely;nap;muszak]
+for(let i=1;i+2<cols.length;i+=4){
+const nev = cols[i];
+const muszak = cols[i+2];
+if(nev && muszak){
+muszakok.push({
+datum: cols[0].replace(/\./g,'-'),
+nev: nev,
+muszak: muszak.toUpperCase()
 });
 }
 }
-return napiAdatok;
-}).flat();
+});
 showData();
 });
 
@@ -88,9 +91,9 @@ if(honapValaszt!=='mind'){
 talalatok = talalatok.filter(r => r.datum.slice(5,7)===honapValaszt);
 }
 
-// Műszak szűrés (kis- és nagybetűtől független)
+// Műszak szűrés
 if(muszakValaszt!=='mind'){
-talalatok = talalatok.filter(r => r.muszak.toUpperCase()===muszakValaszt.toUpperCase());
+talalatok = talalatok.filter(r => r.muszak===muszakValaszt.toUpperCase());
 }
 
 if(talalatok.length===0){
