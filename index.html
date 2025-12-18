@@ -56,14 +56,14 @@ fetch('muszakok.csv')
 .then(r => r.text())
 .then(text => {
 muszakok = text.split('\n').slice(1).map(s=>{
-const cols = s.split(';').map(e=>e.trim());
+const cols = s.split(';');
 let napiAdatok = [];
 for(let i=1;i<cols.length;i+=4){
 if(cols[i] && cols[i+2]){
 napiAdatok.push({
-datum: cols[0].replace(/\./g,'-'), // 2026.01.01 -> 2026-01-01
-nev: cols[i],
-muszak: cols[i+2].toUpperCase()
+datum: cols[0].replace(/\./g,'-').trim(), // 2026.01.01 -> 2026-01-01
+nev: cols[i].trim(),
+muszak: cols[i+2].trim().toUpperCase()
 });
 }
 }
