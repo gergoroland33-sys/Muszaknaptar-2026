@@ -7,13 +7,12 @@
 <style>
 body { font-family: Arial, sans-serif; margin:10px; background:#f7f7f7; }
 h2 { text-align:center; margin-bottom:10px; }
-select { width:100%; padding:5px; margin:5px 0; font-size:16px; }
+select, button { width:100%; padding:5px; margin:5px 0; font-size:16px; }
 .card { background:white; margin:5px 0; padding:10px; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.15);}
-.muszak-A { background:#a0c4ff; color:black; } /* Otthon/Nappal */
-.muszak-B { background:#a0c4ff; color:black; } /* Otthon/Nappal */
-.muszak-C { background:#d0b3ff; color:black; } /* Éjszaka */
-.muszak-D { background:#d0b3ff; color:black; } /* Éjszaka */
-.highlight { border:2px solid #ff3c38; } /* Aktuális nap */
+.date-title { font-weight:bold; margin-bottom:5px; }
+.muszak-A, .muszak-B { background:#a0c4ff; color:black; margin:2px 0; padding:4px; border-radius:4px; } /* Nappal */
+.muszak-C, .muszak-D { background:#d0b3ff; color:black; margin:2px 0; padding:4px; border-radius:4px; } /* Éjszaka */
+.highlight { border:2px solid #ff3c38; padding:8px; border-radius:6px; }
 </style>
 </head>
 <body>
@@ -46,6 +45,8 @@ select { width:100%; padding:5px; margin:5px 0; font-size:16px; }
 <option value="D">D</option>
 </select>
 
+<button id="goto-today">Mai napra ugrás</button>
+
 <div id="eredmeny">Adatok betöltése…</div>
 
 <script>
@@ -59,9 +60,8 @@ muszakok = [];
 const sorok = text.split('\n').slice(1);
 sorok.forEach(sor => {
 const cols = sor.split(';').map(c => c.trim()).filter(c => c!=='');
-// 4-es csoportokra bontás
 for(let i=0; i+3<cols.length; i+=4){
-const datum = cols[i].replace(/\./g,'-'); // YYYY-MM-DD formátum
+const datum = cols[i].replace(/\./g,'-'); // YYYY-MM-DD
 const nev = cols[i+1];
 const nap = cols[i+2];
 const muszak = cols[i+3].toUpperCase();
@@ -73,7 +73,7 @@ muszakok.push({datum, nev, nap, muszak});
 showData();
 });
 
-// Megjelenítés
+// Megjelenítés dátum szerint csoportosítva
 function showData(){
 const honapValaszt = document.getElementById('honap').value;
 const muszakValaszt = document.getElementById('muszak').value;
@@ -91,14 +91,20 @@ if(muszakValaszt!=='mind'){
 talalatok = talalatok.filter(r => r.muszak===muszakValaszt.toUpperCase());
 }
 
-if(talalatok.length===0){
+// Csoportosítás dátum szerint
+const dates = [...new Set(talalatok.map(r=>r.datum))].sort();
+
+if(dates.length===0){
 html='<div class="card">Nincs adat a kiválasztott szűrésre</div>';
 } else {
-talalatok.forEach(r=>{
-const highlight = r.datum===todayStr ? 'highlight' : '';
-html += `<div class="card muszak-${r.muszak} ${highlight}">
-<strong>${r.nev}</strong> – ${r.muszak} műszak – ${r.datum} (${r.nap})
-</div>`;
+dates.forEach(datum=>{
+const aznap = talalatok.filter(r=>r.datum===datum);
+const highlight = datum===todayStr ? 'highlight' : '';
+html += `<div class="card ${highlight}"><div class="date-title">${datum} (${aznap[0].nap})</div>`;
+aznap.forEach(r=>{
+html += `<div class="muszak-${r.muszak}">${r.nev} – ${r.muszak} műszak</div>`;
+});
+html += '</div>';
 });
 }
 
@@ -111,7 +117,14 @@ kiemelt.scrollIntoView({behavior:'smooth', block:'center'});
 }
 }
 
-// Szűrés változáskor
+// Mai nap gomb
+document.getElementById('goto-today').addEventListener('click', ()=>{
+const kiemelt = document.querySelector('.highlight');
+if(kiemelt){
+kiemelt.scrollIntoView({behavior:'smooth', block:'center'});
+}
+});
+
 document.getElementById('honap').addEventListener('change', showData);
 document.getElementById('muszak').addEventListener('change', showData);
 </script>
