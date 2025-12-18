@@ -58,19 +58,15 @@ fetch('muszakok.csv')
 muszakok = [];
 const sorok = text.split('\n').slice(1);
 sorok.forEach(sor => {
-const cols = sor.split(';').map(c => c.trim());
-// végigmegyünk az összes cellán, 4-es csoportokat nézve
-for(let i=1;i<cols.length;i+=4){
-const nev = cols[i];
-const nap = cols[i+1];
-const muszak = cols[i+2];
-if(nev && muszak){
-muszakok.push({
-datum: cols[0].replace(/\./g,'-'),
-nev: nev,
-nap: nap,
-muszak: muszak.toUpperCase()
-});
+const cols = sor.split(';').map(c => c.trim()).filter(c => c!=='');
+// 4-es csoportokra bontás
+for(let i=0; i+3<cols.length; i+=4){
+const datum = cols[i].replace(/\./g,'-');
+const nev = cols[i+1];
+const nap = cols[i+2];
+const muszak = cols[i+3].toUpperCase();
+if(datum && nev && muszak){
+muszakok.push({datum, nev, nap, muszak});
 }
 }
 });
@@ -78,7 +74,7 @@ showData();
 });
 
 // Megjelenítés
-function showData() {
+function showData(){
 const honapValaszt = document.getElementById('honap').value;
 const muszakValaszt = document.getElementById('muszak').value;
 
@@ -88,12 +84,9 @@ const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
 
 let talalatok = muszakok;
 
-// Hónap szűrés
 if(honapValaszt!=='mind'){
 talalatok = talalatok.filter(r => r.datum.slice(5,7)===honapValaszt);
 }
-
-// Műszak szűrés
 if(muszakValaszt!=='mind'){
 talalatok = talalatok.filter(r => r.muszak===muszakValaszt.toUpperCase());
 }
