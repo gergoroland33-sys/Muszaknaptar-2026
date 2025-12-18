@@ -57,16 +57,18 @@ fetch('muszakok.csv')
 .then(text => {
 muszakok = [];
 const sorok = text.split('\n').slice(1);
-sorok.forEach(sor=>{
-const cols = sor.split(';').map(c=>c.trim());
-// Négyes csoportok: [hely;nap;muszak]
-for(let i=1;i+2<cols.length;i+=4){
+sorok.forEach(sor => {
+const cols = sor.split(';').map(c => c.trim());
+// végigmegyünk az összes cellán, 4-es csoportokat nézve
+for(let i=1;i<cols.length;i+=4){
 const nev = cols[i];
+const nap = cols[i+1];
 const muszak = cols[i+2];
 if(nev && muszak){
 muszakok.push({
 datum: cols[0].replace(/\./g,'-'),
 nev: nev,
+nap: nap,
 muszak: muszak.toUpperCase()
 });
 }
@@ -102,7 +104,7 @@ html='<div class="card">Nincs adat a kiválasztott szűrésre</div>';
 talalatok.forEach(r=>{
 const highlight = r.datum===todayStr ? 'highlight' : '';
 html += `<div class="card muszak-${r.muszak} ${highlight}">
-<strong>${r.nev}</strong> – ${r.muszak} műszak – ${r.datum}
+<strong>${r.nev}</strong> – ${r.muszak} műszak – ${r.datum} (${r.nap})
 </div>`;
 });
 }
