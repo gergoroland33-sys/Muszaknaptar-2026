@@ -3,27 +3,215 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Műszaknaptár 2026</title>
+<title>Forvia SMT | Műszaknaptár Pro</title>
 <style>
-body { font-family: Arial, sans-serif; margin:10px; background:#f7f7f7; }
-h2 { text-align:center; }
-select { width:100%; padding:5px; margin:5px 0; font-size:16px; }
-.card { background:white; margin:5px 0; padding:10px; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.15);}
-.muszak-A { background:#bbdefb; color:black; }
-.muszak-B { background:#c8e6c9; color:black; }
-.muszak-C { background:#fff9c4; color:black; }
-.muszak-D { background:#ffe0b2; color:black; }
-.highlight { border:2px solid red; padding:8px; border-radius:6px; }
-.gomb { padding:6px 12px; margin:5px 0; font-size:14px; cursor:pointer; background:#1976d2; color:white; border:none; border-radius:4px; }
+:root {
+--primary: #3b82f6;
+--bg: #0f172a;
+--card-bg: #1e293b;
+--card-border: #334155;
+--text-main: #f1f5f9;
+--text-muted: #94a3b8;
+
+/* Műszak színek - Modern paletta */
+--color-A: #60a5fa; /* Világoskék */
+--color-B: #4ade80; /* Zöld */
+--color-C: #fbbf24; /* Arany */
+--color-D: #f87171; /* Pirosas-narancs */
+}
+
+body {
+font-family: 'Inter', -apple-system, sans-serif;
+background-color: var(--bg);
+background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
+margin: 0;
+padding: 20px;
+color: var(--text-main);
+min-height: 100vh;
+}
+
+.container {
+max-width: 600px;
+margin: 0 auto;
+}
+
+header {
+text-align: center;
+margin-bottom: 25px;
+}
+
+header h1 {
+font-size: 1.8rem;
+margin: 0;
+background: linear-gradient(to right, #60a5fa, #3b82f6);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+
+/* Szűrő panel */
+.filter-panel {
+background: var(--card-bg);
+padding: 20px;
+border-radius: 20px;
+border: 1px solid var(--card-border);
+margin-bottom: 20px;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 15px;
+box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+label {
+display: block;
+font-size: 0.75rem;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+color: var(--text-muted);
+margin-bottom: 8px;
+}
+
+select {
+width: 100%;
+padding: 12px;
+background: #0f172a;
+border: 1px solid var(--card-border);
+border-radius: 12px;
+color: white;
+font-size: 14px;
+outline: none;
+}
+
+.gomb {
+grid-column: span 2;
+padding: 14px;
+background: rgba(59, 130, 246, 0.1);
+color: var(--primary);
+border: 1px solid var(--primary);
+border-radius: 12px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.gomb:hover {
+background: var(--primary);
+color: white;
+}
+
+/* Napok stílusa */
+.day-group {
+margin-bottom: 15px;
+animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.date-header {
+font-size: 0.85rem;
+font-weight: 700;
+color: var(--text-muted);
+margin: 20px 0 10px 10px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.date-header::after {
+content: "";
+flex: 1;
+height: 1px;
+background: var(--card-border);
+}
+
+/* Műszak kártya */
+.shift-card {
+background: var(--card-bg);
+border: 1px solid var(--card-border);
+padding: 16px;
+border-radius: 16px;
+margin-bottom: 8px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+transition: transform 0.2s;
+}
+
+.shift-info {
+display: flex;
+flex-direction: column;
+}
+
+.shift-location {
+font-weight: 700;
+font-size: 1rem;
+}
+
+.shift-leader {
+font-size: 0.8rem;
+color: var(--text-muted);
+margin-top: 4px;
+}
+
+/* Műszak jelvény (Badge) */
+.shift-badge {
+width: 45px;
+height: 45px;
+border-radius: 12px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: 900;
+font-size: 1.2rem;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.muszak-A { background: rgba(96, 165, 250, 0.2); color: var(--color-A); border: 1px solid var(--color-A); }
+.muszak-B { background: rgba(74, 222, 128, 0.2); color: var(--color-B); border: 1px solid var(--color-B); }
+.muszak-C { background: rgba(251, 191, 36, 0.2); color: var(--color-C); border: 1px solid var(--color-C); }
+.muszak-D { background: rgba(248, 113, 113, 0.2); color: var(--color-D); border: 1px solid var(--color-D); }
+
+/* Ma kiemelése */
+.today-highlight {
+border: 2px solid var(--primary);
+box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+position: relative;
+}
+
+.today-highlight::before {
+content: "MAI NAP";
+position: absolute;
+top: -10px;
+right: 20px;
+background: var(--primary);
+color: white;
+font-size: 0.6rem;
+padding: 2px 8px;
+border-radius: 10px;
+font-weight: 800;
+}
+
+@media (max-width: 480px) {
+.filter-panel { grid-template-columns: 1fr; }
+.gomb { grid-column: span 1; }
+}
 </style>
 </head>
 <body>
 
-<h2>Műszaknaptár 2026</h2>
+<div class="container">
+<header>
+<h1>FORVIA SMT</h1>
+<p>Műszaknaptár 2026</p>
+</header>
 
-<label>Hónap:</label>
+<div class="filter-panel">
+<div>
+<label>Hónap szűrés</label>
 <select id="honap">
-<option value="mind">Mind</option>
+<option value="mind">Összes hónap</option>
 <option value="01">Január</option>
 <option value="02">Február</option>
 <option value="03">Március</option>
@@ -37,24 +225,27 @@ select { width:100%; padding:5px; margin:5px 0; font-size:16px; }
 <option value="11">November</option>
 <option value="12">December</option>
 </select>
-
-<label>Műszak:</label>
+</div>
+<div>
+<label>Saját műszak</label>
 <select id="muszak">
-<option value="mind">Mind</option>
-<option value="A">A</option>
-<option value="B">B</option>
-<option value="C">C</option>
-<option value="D">D</option>
+<option value="mind">Mind (A, B, C, D)</option>
+<option value="A">A Műszak</option>
+<option value="B">B Műszak</option>
+<option value="C">C Műszak</option>
+<option value="D">D Műszak</option>
 </select>
+</div>
+<button class="gomb" id="maigomb">Ugrás a mai naphoz</button>
+</div>
 
-<button class="gomb" id="maigomb">Ugrás a mai napra</button>
-
-<div id="eredmeny">Adatok betöltése…</div>
+<div id="eredmeny">
+</div>
+</div>
 
 <script>
 let muszakok = [];
 
-// Műszakvezetők
 const vezetok = {
 'A': 'Czerovszki Zsolt',
 'B': 'Hajdu Zoltán',
@@ -62,16 +253,14 @@ const vezetok = {
 'D': 'Komjáti István'
 };
 
-// CSV betöltése
+// CSV adatok szimulálása / Betöltése
 fetch('muszakok.csv')
 .then(r => r.text())
 .then(text => {
 muszakok = [];
-// minden sor feldolgozása
 text.split('\n').slice(1).forEach(line => {
 line = line.trim();
 if(!line) return;
-// egy sorban több műszak lehet
 let parts = line.split(';;').map(p=>p.trim()).filter(p=>p);
 parts.forEach(p=>{
 const col = p.split(';').map(e=>e.trim());
@@ -88,62 +277,65 @@ muszak: col[3]
 showData();
 });
 
-// Dátumok szerint csoportosítás, szűrés
 function showData() {
 const honapValaszt = document.getElementById('honap').value;
 const muszakValaszt = document.getElementById('muszak').value;
+const eredmenyDiv = document.getElementById('eredmeny');
 
-let html = '';
-const today = new Date();
-const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+const today = new Date().toISOString().split('T')[0];
 
 let talalatok = muszakok;
+if(honapValaszt !== 'mind') talalatok = talalatok.filter(r => r.datum.slice(5,7) === honapValaszt);
+if(muszakValaszt !== 'mind') talalatok = talalatok.filter(r => r.muszak === muszakValaszt);
 
-if(honapValaszt!=='mind'){
-talalatok = talalatok.filter(r => r.datum.slice(5,7)===honapValaszt);
+if(talalatok.length === 0) {
+eredmenyDiv.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Nincs találat a szűrőkhöz.</div>';
+return;
 }
 
-if(muszakValaszt!=='mind'){
-talalatok = talalatok.filter(r => r.muszak===muszakValaszt);
-}
-
-if(talalatok.length===0){
-html='<div class="card">Nincs adat a kiválasztott szűrésre</div>';
-} else {
-// Dátum szerint csoportosítás
+// Csoportosítás dátum szerint
 const napok = {};
-talalatok.forEach(r=>{
-if(!napok[r.datum]) napok[r.datum]=[];
+talalatok.forEach(r => {
+if(!napok[r.datum]) napok[r.datum] = [];
 napok[r.datum].push(r);
 });
 
-Object.keys(napok).sort().forEach(datum=>{
-html += `<div class="card highlight">${datum}</div>`;
-napok[datum].forEach(r=>{
-let muszakNev = r.muszak;
-if(muszakValaszt!=='mind'){ // szűrt nézetben mutassuk a vezetőt
-muszakNev += ` (${vezetok[r.muszak]})`;
-}
-html += `<div class="card muszak-${r.muszak}">
-<strong>${r.hely}</strong> – ${muszakNev} – ${r.nap}
+let html = '';
+Object.keys(napok).sort().forEach(datum => {
+const isToday = datum === today;
+html += `<div class="day-group" id="${isToday ? 'today-marker' : ''}">
+<div class="date-header">${datum}</div>`;
+
+napok[datum].forEach(r => {
+html += `
+<div class="shift-card ${isToday ? 'today-highlight' : ''}">
+<div class="shift-info">
+<span class="shift-location">${r.hely}</span>
+<span class="shift-leader">${vezetok[r.muszak] || 'Nincs megadva'}</span>
+</div>
+<div class="shift-badge muszak-${r.muszak}">
+${r.muszak}
+</div>
 </div>`;
 });
+html += `</div>`;
 });
+
+eredmenyDiv.innerHTML = html;
 }
 
-document.getElementById('eredmeny').innerHTML = html;
-
-// automatikus scroll a mai naphoz
-const maElem = Array.from(document.querySelectorAll('.highlight')).find(el=>el.textContent===todayStr);
-if(maElem){
-maElem.scrollIntoView({behavior:'smooth', block:'center'});
+// Görgetés a mai naphoz
+document.getElementById('maigomb').addEventListener('click', () => {
+const target = document.getElementById('today-marker');
+if(target) {
+target.scrollIntoView({behavior: 'smooth', block: 'center'});
+} else {
+alert("A mai nap nem szerepel a listában (ellenőrizd a szűrőket!)");
 }
-}
+});
 
-// Szűrők eseményei
 document.getElementById('honap').addEventListener('change', showData);
 document.getElementById('muszak').addEventListener('change', showData);
-document.getElementById('maigomb').addEventListener('click', showData);
 </script>
 
 </body>
